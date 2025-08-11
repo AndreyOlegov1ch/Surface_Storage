@@ -1,0 +1,14 @@
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\bin\Debug\net8.0\Surface_Storage.exe
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\bin\Debug\net8.0\Surface_Storage.deps.json
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\bin\Debug\net8.0\Surface_Storage.runtimeconfig.json
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\bin\Debug\net8.0\Surface_Storage.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\bin\Debug\net8.0\Surface_Storage.pdb
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.GeneratedMSBuildEditorConfig.editorconfig
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.AssemblyInfoInputs.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.AssemblyInfo.cs
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.csproj.CoreCompileInputs.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\refint\Surface_Storage.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.pdb
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.genruntimeconfig.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\ref\Surface_Storage.dll

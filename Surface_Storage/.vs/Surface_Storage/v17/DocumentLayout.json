@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\\u041F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0421#\\\u0414\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\Surface_Storage\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B17EC8E8-2C73-46EC-9389-4C2C20E9B470}|Surface_Storage\\Surface_Storage.csproj|c:\\\u043F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0441#\\\u0434\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\surface_storage\\surface_storage\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B17EC8E8-2C73-46EC-9389-4C2C20E9B470}|Surface_Storage\\Surface_Storage.csproj|solutionrelative:surface_storage\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C825D92-BAF1-4828-B1C3-80B671F88126}|Backup_Option\\Backup_Option.csproj|c:\\\u043F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0441#\\\u0434\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\surface_storage\\backup_option\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C825D92-BAF1-4828-B1C3-80B671F88126}|Backup_Option\\Backup_Option.csproj|solutionrelative:backup_option\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\\u041F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0421#\\\u0414\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\Surface_Storage\\Surface_Storage\\Program.cs",
+              "RelativeDocumentMoniker": "Surface_Storage\\Program.cs",
+              "ToolTip": "C:\\\u041F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0421#\\\u0414\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\Surface_Storage\\Surface_Storage\\Program.cs",
+              "RelativeToolTip": "Surface_Storage\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-04T06:05:50.37Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\\u041F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0421#\\\u0414\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\Surface_Storage\\Backup_Option\\Program.cs",
+              "RelativeDocumentMoniker": "Backup_Option\\Program.cs",
+              "ToolTip": "C:\\\u041F\u0440\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435\\\u0421#\\\u0414\u0438\u0441\u0441\u0435\u0440\u0442\u0430\u0446\u0438\u044F\\Surface_Storage\\Backup_Option\\Program.cs",
+              "RelativeToolTip": "Backup_Option\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-11T04:33:15.316Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
