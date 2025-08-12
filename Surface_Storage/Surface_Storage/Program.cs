@@ -50,7 +50,7 @@ namespace Surface_Storage
             AddingToData(ref numberOfSurfaces, descriptionMethod, output, data.dataSurfaces);
             output.text[0] = $"Количество поверхностей: {numberOfSurfaces}";
             Console.Clear();
-            output.text.Add($"Список введенных поверхностей:\n[{string.Join(" , ",data.dataSurfaces.Select(x=>x.Name).ToArray())}]");
+            output.text.Add($"Список введенных поверхностей:\n[{string.Join(" , ", data.dataSurfaces.Select(x => x.Name).ToArray())}]");
             output.OutputText();
 
         }
@@ -77,7 +77,7 @@ namespace Surface_Storage
                     case "с":
                     case "сфера":
                         Surfaces sphere = new Sphere();
-                        AddSurfacesName(sphere, data, "Сфера");
+                        AddingSurfaceParameters(sphere, data, "Сфера", output);
                         Console.Clear();
                         output.OutputText();
                         Console.WriteLine("Успешно добавлено!\n");
@@ -85,7 +85,7 @@ namespace Surface_Storage
                     case "ц":
                     case "цилиндр":
                         Surfaces cylinder = new Cylinder();
-                        AddSurfacesName(cylinder, data, "Цилиндр");
+                        AddingSurfaceParameters(cylinder, data, "Цилиндр", output);
                         Console.Clear();
                         output.OutputText();
                         Console.WriteLine("Успешно добавлено!\n");
@@ -93,7 +93,7 @@ namespace Surface_Storage
                     case "п":
                     case "плоскость":
                         Surfaces plane = new Plane();
-                        AddSurfacesName(plane, data, "Плоскость");
+                        AddingSurfaceParameters(plane, data, "Плоскость", output);
                         Console.Clear();
                         output.OutputText();
                         Console.WriteLine("Успешно добавлено!\n");
@@ -105,27 +105,55 @@ namespace Surface_Storage
                         output.OutputText();
                         continue;
                 }
-                if (count!=0)
-                   n--; 
+
+                if (count != 0)
+                    n--;
             }
         }
-    public static void AddSurfacesName(Surfaces surface, List<Surfaces> data, string form)
+        public static void AddingSurfaceParameters(Surfaces surface, List<Surfaces> data, string form, Output output)
         {
+            //double roughness = 0;
             int newnum = data.Where(s => s != null && s.Name.StartsWith(form)).Count() + 1;
             surface.Name = form + newnum;
             data.Add(surface);
             //Console.WriteLine(surface.Name);
+            while (true)
+            {
+                Console.Write("Введите среднее арифметическое отклонение профиля поверхности (шероховатость Ra) в мкм." +
+                        "\nПо-умолчанию (при отсутствии вводимого значения) поверхности присваивается Ra 6.3: ");
+                string? rough = Console.ReadLine();
+                if (String.IsNullOrEmpty(rough))
+                    break;
+                else if (double.TryParse(rough, out double r) && r > 0)
+                {
+                    //roughness = r;
+                    if (r != 0)
+                        surface.Roughness = r;
+                    Console.WriteLine(surface.Roughness);
+                    break;
+                }
+                else
+                {
+                    Console.Write("Введите корректное значение шероховатости поверхности\nНажмите на любую клавишу для продолжения");
+                    Console.ReadKey();
+                    Console.Clear();
+                    output.OutputText();
+                    Console.WriteLine($"Вводимая поверхность: {form}");
+                    continue;
+                }
+            }
+
         }
     }
     public abstract class Surfaces
     {
         public string Name;
-        List <int> DegreesOfFreedom;
-        double Roughness;
+        public List<int> DegreesOfFreedom;
+        public double Roughness = 6.3;
     }
     public class Plane : Surfaces
     {
-        
+
     }
     public class Cylinder : Surfaces
     {
@@ -134,7 +162,7 @@ namespace Surface_Storage
     public class Sphere : Surfaces
     {
         double Diameter;
-        List <int> DegreesOfFreedom = [ 1, 1, 1, 0, 0, 0 ];
+        List<int> DegreesOfFreedom = [1, 1, 1, 0, 0, 0];
     }
     public class DataBase
     {

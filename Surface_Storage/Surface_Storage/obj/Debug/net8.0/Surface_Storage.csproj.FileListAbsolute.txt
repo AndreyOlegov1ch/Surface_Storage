@@ -12,3 +12,4 @@ C:\Прграммирование\С#\Диссертация\Surface_Storage\Sur
 C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.pdb
 C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.genruntimeconfig.cache
 C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\ref\Surface_Storage.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Surface_Storage\obj\Debug\net8.0\Surface_Storage.sourcelink.json
