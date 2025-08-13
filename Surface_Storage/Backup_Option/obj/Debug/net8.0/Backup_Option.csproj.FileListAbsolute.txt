@@ -1,0 +1,15 @@
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\bin\Debug\net8.0\Backup_Option.exe
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\bin\Debug\net8.0\Backup_Option.deps.json
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\bin\Debug\net8.0\Backup_Option.runtimeconfig.json
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\bin\Debug\net8.0\Backup_Option.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\bin\Debug\net8.0\Backup_Option.pdb
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.GeneratedMSBuildEditorConfig.editorconfig
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.AssemblyInfoInputs.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.AssemblyInfo.cs
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.csproj.CoreCompileInputs.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.sourcelink.json
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\refint\Backup_Option.dll
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.pdb
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\Backup_Option.genruntimeconfig.cache
+C:\Прграммирование\С#\Диссертация\Surface_Storage\Backup_Option\obj\Debug\net8.0\ref\Backup_Option.dll

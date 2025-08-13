@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Surface_Storage")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+678364295d43e289a3d42e6ab19503e5bde1a648")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00a3fdb09a8ebf2994fb118da3dca8fbffb1e51a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Surface_Storage")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Surface_Storage")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
