@@ -1,4 +1,6 @@
-﻿namespace Backup_Option
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace Backup_Option
 {
     internal class Program
     {
@@ -82,6 +84,29 @@
             //    }
             //    surface.Flatness = deviation_value;
             //}
+
+
+
+
+            //List<int> surfaceDegreesOfFreedom = temporaryStorage[choice - 1].DegreesOfFreedom; // Присваивание переменной значений вектора поверхности, с которой выстраиваются взамоотношения
+
+            //if (number == 2 && ((form == "Плоскость" && temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))
+            //    || (form == "Цилиндр" && temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))))
+            //{
+            //    surface.DegreesOfFreedom = new List<int>();
+            //    for (int i = 0; i < 6; i++)
+            //        surface.DegreesOfFreedom.Add(i > 2 ? surfaceDegreesOfFreedom[i] : (surfaceDegreesOfFreedom[i] == 0 ? 1 : 0));
+            //    Console.WriteLine(string.Join(',', surface.DegreesOfFreedom));
+            //}
+
+            //else if (number == 1 && ((form == "Плоскость" && temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))
+            //    || (form == "Цилиндр" && temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))))
+            //{
+            //    surface.DegreesOfFreedom = new List<int>(surfaceDegreesOfFreedom);
+            //    Console.WriteLine(string.Join(',', surface.DegreesOfFreedom));
+            //}
+
+           
 
 
         }
