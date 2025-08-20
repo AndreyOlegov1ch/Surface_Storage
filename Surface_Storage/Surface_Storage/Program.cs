@@ -612,7 +612,7 @@ namespace Surface_Storage
                             {
                                 Console.WriteLine("Выберите поверхность, относительно которой желаете задать параллельность или перпендикулярность.");
                                 for (int i = 0; i < temporaryStorage.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
-                                    Console.WriteLine($"{i + 1} - {temporaryStorage[i].Name}");
+                                    Console.WriteLine($"{i + 1} - {temporaryStorage[i].Name} ({string.Join(',', temporaryStorage[i].DegreesOfFreedom)})");
                                 Console.Write("Введите номер, соответствующий подходящей поверхности: ");
                                 string? choiceSurface = Console.ReadLine(); // Ввод пользователем значения
 
@@ -689,7 +689,7 @@ namespace Surface_Storage
                                                 Console.WriteLine($"Поверхность для построения связи: {temporaryStorage[choice - 1].Name} ({string.Join(',', surfaceDegreesOfFreedom)}). Тип сопряжения: " + (number == 1 ? "Параллельность" : "Перпендикулярность"));
                                                 Console.WriteLine("\nПолученной информации недостаточно.\nНеобходимо выбрать дополнительную поверхность и взаимную ориантацию\n");
                                                 for (int i = 0; i < surfacesWithoutParallel.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
-                                                    Console.WriteLine($"{i+1} - {surfacesWithoutParallel[i].Name}");
+                                                    Console.WriteLine($"{i+1} - {surfacesWithoutParallel[i].Name} ({string.Join(',',surfacesWithoutParallel[i].DegreesOfFreedom)})");
                                                 Console.Write("Введите номер, соответствующий подходящей поверхности: ");
                                                 string? choiceSurface2 = Console.ReadLine(); // Ввод пользователем значения
 
@@ -819,8 +819,276 @@ namespace Surface_Storage
                         output.OutputText(output.temporaryNotification);
                         break;
                     }
+
                     else if (form == "Цилиндр") // Ориентация цилиндра
                     {
+                        if (temporaryStorage.Count() == 0) // Ситуация, когда задаваемая поверхность первая или ранее заданные поверхности сферы (невозможно задать параллельность или перпендикулярность)
+                        {
+                            Console.Write("Выберите подходящий вариант." +
+                                "\n1 - цилиндр перпендикулярен оси X (вектор ориентации - 0, 1, 1, 0, 1, 1)" +
+                                "\n2 - цилиндр перпендикулярен оси Y (вектор ориентации - 1, 0, 1, 1, 0, 1)" +
+                                "\n3 - цилиндр перпендикулярен оси Z (вектор ориентации - 1, 1, 0, 1, 1, 0)" +
+                                "\n4 - задать ориентацию плоскости автоматизированно программой" +
+                                "\nВвести нужно только подходящий номер: ");
+                            string? choiceNum = Console.ReadLine();
+
+                            if (int.TryParse(choiceNum, out int num))
+                            {
+                                switch (num)
+                                {
+                                    case 1:
+                                        {
+                                            surface.DegreesOfFreedom = new List<int>() { 0, 1, 1, 0, 1, 1 };
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            surface.DegreesOfFreedom = new List<int>() { 1, 0, 1, 1, 0, 1 };
+                                            break;
+                                        }
+                                    case 3:
+                                    case 4:
+                                        {
+                                            surface.DegreesOfFreedom = new List<int>() { 1, 1, 0, 1, 1, 0 };
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            Console.WriteLine("Введено некорректное значение выбора. Введите целое число от 1 до 4 включительно" +
+                                                "\nНажмите на любую клавишу для продолжения");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            output.OutputText(output.temporaryNotification);
+                                            continue;
+                                        }
+                                }
+                                output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
+                                Console.Clear();
+                                output.OutputText(output.temporaryNotification);
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Необходимо ввести целое число 1, 2, 3 или 4.\nНажмите на любую клавишу для продолжения");
+                                Console.ReadKey();
+                                Console.Clear();
+                                output.OutputText(output.temporaryNotification);
+                                continue;
+                            }
+                        }
+
+
+                        else // Ситуация наличия 1 и более ранее занесенных поверхностей кроме сферы
+                        {
+                            while (true)
+                            {
+                                Console.WriteLine("Выберите поверхность, относительно которой желаете задать параллельность или перпендикулярность.");
+                                for (int i = 0; i < temporaryStorage.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
+                                    Console.WriteLine($"{i + 1} - {temporaryStorage[i].Name} ({string.Join(',',temporaryStorage[i].DegreesOfFreedom)})");
+                                Console.Write("Введите номер, соответствующий подходящей поверхности: ");
+                                string? choiceSurface = Console.ReadLine(); // Ввод пользователем значения
+
+                                if (int.TryParse(choiceSurface, out int choice) && choice <= temporaryStorage.Count() && choice > 0 && choice % 1 == 0) // Выбор и фиксирование индекса подходящей поверхности (не забыть отнять 1)
+                                {
+                                    Console.Write("Выберете способ взаимной ориентации.\n1 - Параллельность\n2 - Перпендикулярность\nВведите номер подходящего способа: ");
+                                    string? numberOfMethod = Console.ReadLine();
+
+                                    if (int.TryParse(numberOfMethod, out int number) && (number == 1 || number == 2)) // Выбор и фиксирование способа задания взаимной связи (параллельность или перпендикулярность)
+                                    {
+                                        List<int> surfaceDegreesOfFreedom = temporaryStorage[choice - 1].DegreesOfFreedom; // Присваивание переменной значений вектора поверхности, с которой выстраиваются взамоотношения
+
+                                        List<int> perpendicularSurface = new List<int>(); // Шестимерный вектор перпендикулярной поверхности
+                                        for (int i = 0; i < 6; i++) // Заполнение вектора
+                                            perpendicularSurface.Add(i > 2 ? surfaceDegreesOfFreedom[i] : (surfaceDegreesOfFreedom[i] == 0 ? 1 : 0));
+
+                                        List<Surfaces> surfacesWithoutParallel = temporaryStorage.Where(degrees => !degrees.DegreesOfFreedom.SequenceEqual(surfaceDegreesOfFreedom) && !degrees.DegreesOfFreedom.SequenceEqual(perpendicularSurface)).ToList(); // Набор поверхностей, которые отличаются шестимерной таблицей от выбранной поверхности и перпендикулярной ей плоскости/цилиндру
+
+                                        if (number == 2 && (temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))) // Цилиндр перпендикулярен плоскости
+                                        {
+                                            surface.DegreesOfFreedom = new List<int>();
+                                            for (int i = 0; i < 6; i++)
+                                                surface.DegreesOfFreedom.Add(i > 2 ? surfaceDegreesOfFreedom[i] : (surfaceDegreesOfFreedom[i] == 0 ? 1 : 0));
+                                            break;
+                                        }
+
+                                        else if (number == 1 && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))) // Цилиндр параллелен цилиндру
+                                        {
+                                            surface.DegreesOfFreedom = new List<int>(surfaceDegreesOfFreedom);
+                                            break;
+                                        }
+                                        else if (number == 1 && (temporaryStorage.Count() == 1 || surfacesWithoutParallel.Count() == 0) && (temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))) // Цилиндр параллелен плоскости, но других поверхностей больше нет
+                                        {
+                                            if (surfaceDegreesOfFreedom.SequenceEqual(new List<int> { 1, 0, 0, 0, 1, 1 }))
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 1, 0, 1, 1, 0, 1 };
+                                            }
+                                            else if (surfaceDegreesOfFreedom.SequenceEqual(new List<int> { 0, 1, 0, 1, 0, 1 }))
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 1, 1, 0, 1, 1, 0 };
+                                            }
+                                            else
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 0, 1, 1, 0, 1, 1 };
+                                            }
+                                            break;
+                                        }
+                                        else if (number == 2 && (temporaryStorage.Count() == 1 || surfacesWithoutParallel.Count() == 0) && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))) // Цилиндр перпендикулярен цилиндру, но других поверхностей больше нет
+                                        {
+                                            if (surfaceDegreesOfFreedom.SequenceEqual(new List<int> { 0, 1, 1, 0, 1, 1 }))
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 1, 0, 1, 1, 0, 1 };
+                                            }
+                                            else if (surfaceDegreesOfFreedom.SequenceEqual(new List<int> { 1, 0, 1, 1, 0, 1 }))
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 1, 1, 0, 1, 1, 0 };
+                                            }
+                                            else
+                                            {
+                                                surface.DegreesOfFreedom = new List<int> { 0, 1, 1, 0, 1, 1 };
+                                            }
+                                            break;
+                                        }
+
+                                        else if ((number == 1 && (temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))) ||
+                                            (number == 2 && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр")))) // Если цилиндр параллелен плоскости или цилиндр перпендикулярен цилиндру
+                                        {
+                                            while (true)
+                                            {
+                                                Console.Clear();
+                                                output.OutputText(output.temporaryNotification);
+
+                                                Console.WriteLine($"Поверхность для построения связи: {temporaryStorage[choice - 1].Name} ({string.Join(',', surfaceDegreesOfFreedom)}). Тип сопряжения: " + (number == 1 ? "Параллельность" : "Перпендикулярность"));
+                                                Console.WriteLine("\nПолученной информации недостаточно.\nНеобходимо выбрать дополнительную поверхность и взаимную ориантацию\n");
+                                                for (int i = 0; i < surfacesWithoutParallel.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
+                                                    Console.WriteLine($"{i + 1} - {surfacesWithoutParallel[i].Name} ({string.Join(',', surfacesWithoutParallel[i].DegreesOfFreedom)})");
+                                                Console.Write("Введите номер, соответствующий подходящей поверхности: ");
+                                                string? choiceSurface2 = Console.ReadLine(); // Ввод пользователем значения
+
+                                                if (int.TryParse(choiceSurface2, out int choice2) && choice2 <= surfacesWithoutParallel.Count() && choice2 > 0 && choice2 % 1 == 0) // Выбор и фиксирование индекса подходящей поверхности 
+                                                {
+                                                    Console.Write("Выберете способ взаимной ориентации.\n1 - Параллельность\n2 - Перпендикулярность\nВведите номер подходящего способа: ");
+                                                    string? numberOfMethod2 = Console.ReadLine();
+
+                                                    if (int.TryParse(numberOfMethod2, out int number2) && (number2 == 1 || number2 == 2)) // Выбор и фиксирование способа задания взаимной связи (параллельность или перпендикулярность)
+                                                    {
+                                                        if (number2 == 2 && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Плоскость"))) // Цилиндр перпендикулярен плоскости
+                                                        {
+                                                            surface.DegreesOfFreedom = new List<int>();
+                                                            for (int i = 0; i < 6; i++)
+                                                                surface.DegreesOfFreedom.Add(i > 2 ? surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom[i]
+                                                                    : (surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom[i] == 0 ? 1 : 0));
+                                                            break;
+                                                        }
+                                                        else if (number2 == 1 && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Цилиндр"))) // Цилиндр параллелен цилиндру
+                                                        {
+                                                            surface.DegreesOfFreedom = new List<int>(surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom);
+                                                            break;
+                                                        }
+                                                        else if (number2 == 1 && (temporaryStorage[choice - 1].Name.StartsWith("Плоскость")) && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Плоскость"))) // Цилиндр параллелен плоскости и в прошлый раз было тоже самое
+                                                        {
+                                                            List<int> indicators = new List<int>();
+                                                            for (int i = 0; i < 3; i++)
+                                                                indicators.Add(surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom[i] + surfaceDegreesOfFreedom[i]);
+                                                            if (indicators[0] == 0)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 0, 1, 1, 0, 1, 1 };
+                                                            }
+                                                            else if (indicators[1] == 0)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 0, 1, 1, 0, 1 };
+                                                            }
+                                                            else if (indicators[2] == 0)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 1, 0, 1, 1, 0 };
+                                                            }
+                                                            break;
+                                                        }
+                                                        else if ((number2 == 2 && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Цилиндр")) && (temporaryStorage[choice - 1].Name.StartsWith("Плоскость"))) ||
+                                                            (number2 == 1 && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Плоскость")) && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр")))) // Цилиндр перпендикулярен цилиндру в прошлый раз цилиндр параллелен плоскости. Также, Цилиндр параллелен плоскости, в прошлый раз цилиндр перпендикулярен цилиндру
+                                                        {
+                                                            List<int> indicators = new List<int>();
+                                                            for (int i = 0; i < 3; i++)
+                                                                indicators.Add(surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom[i] + surfaceDegreesOfFreedom[i]);
+                                                            if (indicators[0] == 1)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 0, 1, 1, 0, 1, 1 };
+                                                            }
+                                                            else if (indicators[1] == 1)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 0, 1, 1, 0, 1 };
+                                                            }
+                                                            else if (indicators[2] == 1)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 1, 0, 1, 1, 0 };
+                                                            }
+                                                            break;
+                                                        }
+                                                        else if (number2 == 2 && (surfacesWithoutParallel[choice2 - 1].Name.StartsWith("Цилиндр")) && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))) // Цилиндр перпендикулярен цилиндру, в прошлый раз было тоже самое
+                                                        {
+                                                            List<int> indicators = new List<int>();
+                                                            for (int i = 0; i < 3; i++)
+                                                                indicators.Add(surfacesWithoutParallel[choice2 - 1].DegreesOfFreedom[i] + surfaceDegreesOfFreedom[i]);
+                                                            if (indicators[0] == 2)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 0, 1, 1, 0, 1, 1 };
+                                                            }
+                                                            else if (indicators[1] == 2)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 0, 1, 1, 0, 1 };
+                                                            }
+                                                            else if (indicators[2] == 2)
+                                                            {
+                                                                surface.DegreesOfFreedom = new List<int> { 1, 1, 0, 1, 1, 0 };
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Необходимо ввести целое число 1 или 2.\nНажмите на любую клавишу для продолжения");
+                                                        Console.ReadKey();
+                                                        Console.Clear();
+                                                        output.OutputText(output.temporaryNotification);
+                                                        continue;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                                    Console.ReadKey();
+                                                    Console.Clear();
+                                                    output.OutputText(output.temporaryNotification);
+                                                    continue;
+                                                }
+                                                break;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Необходимо ввести целое число 1 или 2.\nНажмите на любую клавишу для продолжения");
+                                        Console.ReadKey();
+                                        Console.Clear();
+                                        output.OutputText(output.temporaryNotification);
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {temporaryStorage.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                    Console.ReadKey();
+                                    Console.Clear();
+                                    output.OutputText(output.temporaryNotification);
+                                    continue;
+                                }
+                                break;
+                            }
+                        }
+                        output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
+                        Console.Clear();
+                        output.OutputText(output.temporaryNotification);
+                        break;
 
                     }
                 }
