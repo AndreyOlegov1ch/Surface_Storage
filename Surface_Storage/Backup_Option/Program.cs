@@ -106,7 +106,25 @@ namespace Backup_Option
             //    Console.WriteLine(string.Join(',', surface.DegreesOfFreedom));
             //}
 
-           
+
+
+            /*
+            Console.Write("Выберите номер, описывающий состояние расположения поверхности относительно детали.\n1 - Внутренняя\n2 - Наружная: ");
+            string? location = Console.ReadLine();
+            if (!String.IsNullOrEmpty(location) && (location.Equals("внутренняя", StringComparison.CurrentCultureIgnoreCase) || location.Equals("наружная", StringComparison.CurrentCultureIgnoreCase)))
+            {
+                surface.Location = location.ToLower() == "внутренняя" ? "Внутренняя" : "Наружная";
+                break;
+            }
+            else
+            {
+                Console.Write("Введите корректное состояние расположения поверхности относительно детали\nНажмите на любую клавишу для продолжения");
+                Console.ReadKey();
+                Console.Clear();
+                output.OutputText(output.temporaryNotification);
+                continue;
+            }
+            */
 
 
         }

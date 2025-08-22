@@ -15,20 +15,28 @@ namespace Surface_Storage
 
             while (check_1 == false) // Блок задания количества поверхностей объекта
             {
-                Console.Write("Введите количество поверхностей объекта.\nЕсли количество неизвестно - введите 0: ");
-                check_1 = int.TryParse(Console.ReadLine(), out int num);
-                if (check_1 == false || num < 0)
+                Console.Write("Введите количество поверхностей объекта.\nЕсли количество неизвестно - Нажмите Enter: ");
+                string? input = Console.ReadLine();
+                check_1 = int.TryParse(input, out int num);
+
+                if (string.IsNullOrEmpty(input))
                 {
-                    Console.Write("Некорректное значение. Введите целое число\nНажмите на любую клавишу для продолжения");
+                    break;
+                }
+                else if (check_1 == false || num <= 0)
+                {
+                    Console.Write("Некорректное значение. Введите целое число или нажмите Enter, если количество поверхностей неизвестно\nНажмите на любую клавишу для продолжения");
                     Console.ReadKey();
                     Console.Clear();
                     check_1 = false;
+                    continue;
                 }
                 numberOfSurfaces = num;
             }
             Console.Clear();
             output.text.Add("Количество поверхностей: " + (numberOfSurfaces != 0 ? numberOfSurfaces : "Уточняется далее")); // Добавление текста в шапку
             output.OutputText(output.text); // Отображение шапки
+
 
             while (true) // Блок фиксирования способа описания положения поверхности в пространства
             {
@@ -49,7 +57,7 @@ namespace Surface_Storage
             output.OutputText(output.text);
 
             AddingToData(ref numberOfSurfaces, descriptionMethod, output, data.dataSurfaces); // Отправление информации в метод, осуществляющий прием и фиксацию всех параметров каждой поверхности
-            output.text[0] = $"Количество поверхностей: {numberOfSurfaces}";
+            output.text[0] = $"Количество поверхностей с успешно заданными параметрами: {numberOfSurfaces}";
             Console.Clear();
             output.text.Add($"Список введенных поверхностей:\n[{string.Join(" , ", data.dataSurfaces.Select(x => x.Name).ToArray())}]");
             output.OutputText(output.text);
@@ -59,14 +67,15 @@ namespace Surface_Storage
 
         public static void AddingToData(ref int numberOfSurfaces, int descriptionMethod, Output output, List<Surfaces> data) // Метод, осуществляющий прием и фиксацию имени поверхности
         {
+            int checkingNumSurfaces = 1; // Счетчик поверхностей
             output.temporaryNotification = new List<string>(output.text); // Шапка с временным содержанием (наименование поверхности, шероховатость, вектор ориентации в пространстве и т.д.)
             string? input;
             int count = numberOfSurfaces;
             int n = numberOfSurfaces == 0 ? numberOfSurfaces : numberOfSurfaces - 1;
             while (n >= 0) // Фиксированние наименования поверхности
             {
-                Console.Write("Введите наименование поверхности\nВведите \"end\", если желаете прекратить" +
-                    "\nДопускается ввод только первой буквы наименования или слова целиком: ");
+                Console.Write("Введите наименование поверхности\nВведите \"end\", если желаете прекратить заполнение параметров поверхностей" +
+                    "\nДопускается ввод только первой буквы наименования или слова целиком: "); // !!! Что лучше, самостоятельно вводить имя, или выбирать из списка (1 - Сфера, 2 - Плоскость, 3 - Цилиндр)?
                 input = Console.ReadLine();
                 input = String.IsNullOrEmpty(input) ? input : input.ToLower();
                 if (input == "end") // Прерывание метода
@@ -92,13 +101,14 @@ namespace Surface_Storage
                         AddingSurfaceParameters(plane, data, "Плоскость", output, descriptionMethod); // Метод, осуществляющий прием и фиксацию всех параметров каждой поверхности
                         break;
                     default:
-                        Console.Write("Введите корректное наименование поверхности\nНажмите на любую клавишу для продолжения");
+                        Console.Write("Введите корректное наименование поверхности (имя целиком или только первую букву наименования)\nНажмите на любую клавишу для продолжения");
                         Console.ReadKey();
                         Console.Clear();
                         output.OutputText(output.temporaryNotification);
                         continue;
                 }
                 Console.Clear();
+                output.text[0] = numberOfSurfaces == 0 ? $"Количество поверхностей с заданными параметрами: {checkingNumSurfaces++}" : $"Количество поверхностей: Параметры заданы для {checkingNumSurfaces++} из {numberOfSurfaces} поверхностей";
                 output.OutputText(output.temporaryNotification);
                 Console.WriteLine("Успешно добавлено!\nНажмите любую клавишу чтобы продолжить"); // Оповещение об успешном фиксировании параметров поверхности
                 Console.ReadKey();
@@ -114,7 +124,6 @@ namespace Surface_Storage
 
         public static void AddingSurfaceParameters(Surfaces surface, List<Surfaces> data, string form, Output output, int descriptionMethod) // Метод, осуществляющий прием и фиксацию всех параметров каждой поверхности
         {
-            //double roughness = 0;
             int newnum = data.Where(s => s != null && s.Name.StartsWith(form)).Count() + 1; // Поиск следующего идентификатора для каждого типа поверхности (если есть Сфера1, то новой поверхности будет присвоен идентификатор 2. Для других аналогично)
             surface.Name = form + newnum;
             List<Surfaces> temporaryStorage = new List<Surfaces>(data.Where(s => !s.Name.StartsWith("Сфера"))); // Создание временного хранилища с ранее добавленными поверхностями кроме сфер
@@ -175,18 +184,18 @@ namespace Surface_Storage
                 output.temporaryNotification.Add($"Диаметр поверхности: {surface.Diameter} мм");
                 output.OutputText(output.temporaryNotification);
 
-                while (true) // Блок задания состояния расположения поверхности (внутреннее/наружное)
+                while (true) // Блок задания состояния расположения поверхности (внутреннее/наружное) 
                 {
-                    Console.Write("Введите состояние расположения поверхности относительно детали. Внутренняя или Наружная: ");
+                    Console.Write("Выберите номер, описывающий состояние расположения поверхности относительно детали.\n1 - Внутренняя\n2 - Наружная\nВаш выбор: ");
                     string? location = Console.ReadLine();
-                    if (!String.IsNullOrEmpty(location) && (location.Equals("внутренняя", StringComparison.CurrentCultureIgnoreCase) || location.Equals("наружная", StringComparison.CurrentCultureIgnoreCase)))
+                    if (int.TryParse(location, out int num) && (num == 1 || num == 2))
                     {
-                        surface.Location = location.ToLower() == "внутренняя" ? "Внутренняя" : "Наружная";
+                        surface.Location = num == 1 ? "Внутренняя" : "Наружная";
                         break;
                     }
                     else
                     {
-                        Console.Write("Введите корректное состояние расположения поверхности относительно детали\nНажмите на любую клавишу для продолжения");
+                        Console.Write("Введите номер 1 или 2\nНажмите на любую клавишу для продолжения");
                         Console.ReadKey();
                         Console.Clear();
                         output.OutputText(output.temporaryNotification);
@@ -201,31 +210,70 @@ namespace Surface_Storage
             while (true) // Блок задания отклонений формы поверхности
             {
                 if (form == "Плоскость")
-                    Console.Write("Введите наименование отклонения от формы поверхности и его значение через пробел в миллиметрах.\n" +
-                        "Доступные варианты:\nПлоскостность;\nПрямолинейность.\nЧтобы прекратить ввод отклонений форм поверхностей - введите 0:");
+                    Console.Write("Выберите номер, соответствующий подходящему наименованию отклонения от формы поверхности и его значение через пробел (размерность - миллиметры).\n" +
+                        "Доступные варианты:\n1 - Плоскостность\n2 - Прямолинейность\nДля прекращения ввода отклонений форм поверхностей и задания значений неуказанных отклонений по умолчанию (0,005 мм) - нажмите Enter: ");
                 else if (form == "Цилиндр")
-                    Console.Write("Введите наименование отклонения от формы поверхности и его значение через пробел в миллиметрах.\n" +
-                        "Доступные варианты:\nЦилиндричность;\nПрямолинейность;\nКруглость.\nЧтобы прекратить ввод отклонений форм поверхностей - введите 0:");
+                    Console.Write("Выберите номер, соответствующий подходящему наименованию отклонения от формы поверхности и его значение через пробел (размерность - миллиметры).\n" +
+                        "Доступные варианты:\n1 - Цилиндричность\n2 - Прямолинейность\n3 - Круглость\nДля прекращения ввода отклонений форм поверхностей и задания значений неуказанных отклонений по умолчанию (0,005 мм) - нажмите Enter: ");
                 else if (form == "Сфера")
-                    Console.Write("Введите наименование отклонения от формы поверхности и его значение через пробел в миллиметрах.\n" +
-                        "Доступные варианты:\nКруглость.\nЧтобы прекратить ввод отклонений форм поверхностей - введите 0:");
+                    Console.Write("Выберите номер, соответствующий подходящему наименованию отклонения от формы поверхности и его значение через пробел (размерность - миллиметры).\n" +
+                        "Доступные варианты:\n1 - Круглость\nДля прекращения ввода отклонений форм поверхностей и задания значений неуказанных отклонений по умолчанию (0,005 мм) - нажмите Enter: ");
 
                 List<string> list = Console.ReadLine().Trim().Split(' ').ToList();
 
-                if (list[0] == "0") // Отработка прерывания блока задания отклонений
+                if (string.IsNullOrEmpty(list[0])) // Отработка прерывания блока задания отклонений
+                {
+                    if (form == "Плоскость")
+                    {
+                        if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Плоскостности:")).Count() == 0)
+                        {
+                            surface.Flatness = 0.005;
+                            output.temporaryNotification.Add($"Отклонение от Плоскостности: 0,005 мм");
+                        }
+
+                        if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Прямолинейности:")).Count() == 0)
+                        {
+                            surface.Flatness = 0.005;
+                            output.temporaryNotification.Add($"Отклонение от Прямолинейности: 0,005 мм");
+                        }
+                    }
+                    else if (form == "Цилиндр")
+                    {
+                        if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Цилиндричности:")).Count() == 0)
+                        {
+                            surface.Flatness = 0.005;
+                            output.temporaryNotification.Add($"Отклонение от Цилиндричности: 0,005 мм");
+                        }
+
+                        if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Прямолинейности:")).Count() == 0)
+                        {
+                            surface.Flatness = 0.005;
+                            output.temporaryNotification.Add($"Отклонение от Прямолинейности: 0,005 мм");
+                        }
+
+                        if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Круглости:")).Count() == 0)
+                        {
+                            surface.Flatness = 0.005;
+                            output.temporaryNotification.Add($"Отклонение от Круглости: 0,005 мм");
+                        }
+                    }
+                    else if (form == "Сфера" && (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Круглости:")).Count() == 0))
+                    {
+                        surface.Flatness = 0.005;
+                        output.temporaryNotification.Add($"Отклонение от Круглости: {surface.Flatness} мм");
+                    }
                     break;
+                }
                 if (list.Count() == 2) // Выполнение блока при удовлетворении требований к входным данным
                 {
-                    if (double.TryParse(list[1], out double v) && v > 0 && (list[0].Equals("Плоскостность", StringComparison.CurrentCultureIgnoreCase) ||
-                        list[0].Equals("Цилиндричность", StringComparison.CurrentCultureIgnoreCase) || list[0].Equals("Прямолинейность", StringComparison.CurrentCultureIgnoreCase) ||
-                        list[0].Equals("Круглость", StringComparison.CurrentCultureIgnoreCase)))
+                    if (double.TryParse(list[1], out double v) && v > 0 && (int.TryParse(list[0], out int name)) && name>0)
                     {
-                        string? deviation_name = list[0];
+                        int number_name = name;
                         double deviation_value = v;
 
                         if (form == "Плоскость") // Задание отклонений формы для плоскости
                         {
-                            if (deviation_name.Equals("Плоскостность", StringComparison.CurrentCultureIgnoreCase))
+                            if (number_name==1)
                             {
                                 surface.Flatness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Плоскостности:")).ToList().Count() == 1)
@@ -238,7 +286,7 @@ namespace Surface_Storage
                                     output.temporaryNotification.Add($"Отклонение от Плоскостности: {surface.Flatness} мм");
                                 }
                             }
-                            else if (deviation_name.Equals("Прямолинейность", StringComparison.CurrentCultureIgnoreCase))
+                            else if (number_name==2)
                             {
                                 surface.Straightness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Прямолинейности:")).ToList().Count() == 1)
@@ -253,7 +301,7 @@ namespace Surface_Storage
                             }
                             else
                             {
-                                Console.Write("Для Плоскости могут быть назначены только отклонения от Плоскостности и/или Прямолинейности" +
+                                Console.Write("Для Плоскости могут быть выбраны номера 1 (отклонение от Плоскостности) и 2 (отклонение от Прямолинейности)" +
                                     "\nНажмите на любую клавишу для продолжения");
                                 Console.ReadKey();
                                 Console.Clear();
@@ -264,7 +312,7 @@ namespace Surface_Storage
 
                         else if (form == "Цилиндр") // Задание отклонений формы для цилиндра
                         {
-                            if (deviation_name.Equals("Цилиндричность", StringComparison.CurrentCultureIgnoreCase))
+                            if (number_name==1)
                             {
                                 surface.Cylindrical = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Цилиндричности:")).ToList().Count() == 1)
@@ -277,7 +325,7 @@ namespace Surface_Storage
                                     output.temporaryNotification.Add($"Отклонение от Цилиндричности: {surface.Cylindrical} мм");
                                 }
                             }
-                            else if (deviation_name.Equals("Прямолинейность", StringComparison.CurrentCultureIgnoreCase))
+                            else if (number_name == 2)
                             {
                                 surface.Straightness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Прямолинейности:")).ToList().Count() == 1)
@@ -290,7 +338,7 @@ namespace Surface_Storage
                                     output.temporaryNotification.Add($"Отклонение от Прямолинейности: {surface.Straightness} мм");
                                 }
                             }
-                            else if (deviation_name.Equals("Круглость", StringComparison.CurrentCultureIgnoreCase))
+                            else if (number_name == 3)
                             {
                                 surface.Roughness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Круглости:")).ToList().Count() == 1)
@@ -305,7 +353,7 @@ namespace Surface_Storage
                             }
                             else
                             {
-                                Console.Write("Для Цилиндра могут быть назначены только отклонения от Цилиндричности и/или Прямолинейности и/или Круглости" +
+                                Console.Write("Для Цилиндра могут быть выбраны номера 1 (отклонение от Цилиндричности), 2 (отклонение от Прямолинейности) и 3 (отклонение от Круглости)" +
                                         "\nНажмите на любую клавишу для продолжения");
                                 Console.ReadKey();
                                 Console.Clear();
@@ -315,9 +363,9 @@ namespace Surface_Storage
                         }
                         else if (form == "Сфера") // Задание отклонений формы для сферы
                         {
-                            if (deviation_name.Equals("Круглость", StringComparison.CurrentCultureIgnoreCase) == false)
+                            if (number_name != 1)
                             {
-                                Console.Write("Для Сферы может быть назначено только отклонение от Круглости" +
+                                Console.Write("Для Сферы может быть выбран номер 1 (отклонение от Круглости)" +
                                             "\nНажмите на любую клавишу для продолжения");
                                 Console.ReadKey();
                                 Console.Clear();
@@ -337,7 +385,7 @@ namespace Surface_Storage
                         }
                     }
 
-                    else if (!list[0].Equals("Плоскостность", StringComparison.CurrentCultureIgnoreCase) &&
+                    /*else if (!list[0].Equals("Плоскостность", StringComparison.CurrentCultureIgnoreCase) &&
                         !list[0].Equals("Цилиндричность", StringComparison.CurrentCultureIgnoreCase) &&
                         !list[0].Equals("Прямолинейность", StringComparison.CurrentCultureIgnoreCase) &&
                         !list[0].Equals("Круглость", StringComparison.CurrentCultureIgnoreCase)) // Отработка исключений
@@ -348,10 +396,10 @@ namespace Surface_Storage
                         Console.Clear();
                         output.OutputText(output.temporaryNotification);
                         continue;
-                    }
+                    }*/
                     else if (v < 0) // Отработка исключений
                     {
-                        Console.Write("Значение отклонения не может быть меньше 0." +
+                        Console.Write("Значение отклонения не может быть отрицательным (меньше 0)." +
                                            "\nНажмите на любую клавишу для продолжения");
                         Console.ReadKey();
                         Console.Clear();
@@ -360,8 +408,8 @@ namespace Surface_Storage
                     }
                     else // Отработка исключений
                     {
-                        Console.Write("Значение отклонения должно быть положительным и численным (целым или дробным, к примеру, 1 или 0,05) " +
-                            "Дробные значения указываются через запятую, а не точку." +
+                        Console.Write("Номер с соответствующим именем должен быть положительным и целым.\nЗначение отклонения должно быть положительным и численным (целым или дробным, к примеру, 1 или 0,05)" +
+                            "\nДробные значения указываются через запятую, а не точку." +
                                            "\nНажмите на любую клавишу для продолжения");
                         Console.ReadKey();
                         Console.Clear();
@@ -371,7 +419,7 @@ namespace Surface_Storage
                 }
                 else if (list.Count() < 2)
                 {
-                    Console.Write("Вы ввели недостаточно данных либо ничего не указали. Необходимо ввести наименование отклонения и через пробел указать его значение" +
+                    Console.Write("Вы ввели недостаточно данных либо ничего не указали. Необходимо выбрать номер с наименованием отклонения и через пробел указать его значение" +
                                             "\nНажмите на любую клавишу для продолжения");
                     Console.ReadKey();
                     Console.Clear();
@@ -380,7 +428,7 @@ namespace Surface_Storage
                 }
                 else
                 {
-                    Console.Write("Вы ввели избыточное количество данных. Необходимо только ввести наименование отклонения и через пробел указать его значение" +
+                    Console.Write("Вы ввели избыточное количество данных. Необходимо только ввести номер с наименованием отклонения и через пробел указать его значение" +
                                             "\nНажмите на любую клавишу для продолжения");
                     Console.ReadKey();
                     Console.Clear();
@@ -394,7 +442,6 @@ namespace Surface_Storage
             }
             Console.Clear();
             output.OutputText(output.temporaryNotification);
-
 
 
             if (descriptionMethod == 1) // Блок задания ориентации поверхностей через шестимерный вектор
@@ -427,8 +474,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 1, 0, 0, 0, 1, 1 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 case 2:
@@ -437,8 +484,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 0, 1, 0, 1, 0, 1 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 case 3:
@@ -447,8 +494,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 0, 0, 1, 1, 1, 0 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 default:
@@ -460,6 +507,8 @@ namespace Surface_Storage
                                         continue;
                                     }
                             }
+                            Console.Clear();
+                            output.OutputText(output.temporaryNotification);
                             break;
                         }
                         else
@@ -488,8 +537,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 1, 1, 0, 1, 1, 0 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 case 2:
@@ -498,8 +547,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 0, 1, 1, 0, 1, 1 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 case 3:
@@ -508,8 +557,8 @@ namespace Surface_Storage
                                         surface.DegreesOfFreedom = new List<int>() { 1, 0, 1, 1, 0, 1 };
                                         output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                         //Console.ReadKey();
-                                        Console.Clear();
-                                        output.OutputText(output.temporaryNotification);
+                                        //Console.Clear();
+                                        //output.OutputText(output.temporaryNotification);
                                         break;
                                     }
                                 default:
@@ -521,6 +570,8 @@ namespace Surface_Storage
                                         continue;
                                     }
                             }
+                            Console.Clear();
+                            output.OutputText(output.temporaryNotification);
                             break;
                         }
                         else
@@ -575,7 +626,8 @@ namespace Surface_Storage
                                             surface.DegreesOfFreedom = new List<int>() { 0, 1, 0, 1, 0, 1 };
                                             break;
                                         }
-                                    case 3: case 4:
+                                    case 3:
+                                    case 4:
                                         {
                                             surface.DegreesOfFreedom = new List<int>() { 0, 0, 1, 1, 1, 0 };
                                             break;
@@ -589,7 +641,6 @@ namespace Surface_Storage
                                             output.OutputText(output.temporaryNotification);
                                             continue;
                                         }
-
                                 }
                                 output.temporaryNotification.Add($"Шестимерный вектор ориентации поверхности в пространстве: {string.Join(',', surface.DegreesOfFreedom)}");
                                 Console.Clear();
@@ -675,7 +726,6 @@ namespace Surface_Storage
                                                 surface.DegreesOfFreedom = new List<int> { 0, 0, 1, 1, 1, 0 };
                                             }
                                             break;
-
                                         }
 
                                         else if ((number == 1 && (temporaryStorage[choice - 1].Name.StartsWith("Цилиндр"))) ||
@@ -689,7 +739,7 @@ namespace Surface_Storage
                                                 Console.WriteLine($"Поверхность для построения связи: {temporaryStorage[choice - 1].Name} ({string.Join(',', surfaceDegreesOfFreedom)}). Тип сопряжения: " + (number == 1 ? "Параллельность" : "Перпендикулярность"));
                                                 Console.WriteLine("\nПолученной информации недостаточно.\nНеобходимо выбрать дополнительную поверхность и взаимную ориантацию\n");
                                                 for (int i = 0; i < surfacesWithoutParallel.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
-                                                    Console.WriteLine($"{i+1} - {surfacesWithoutParallel[i].Name} ({string.Join(',',surfacesWithoutParallel[i].DegreesOfFreedom)})");
+                                                    Console.WriteLine($"{i + 1} - {surfacesWithoutParallel[i].Name} ({string.Join(',', surfacesWithoutParallel[i].DegreesOfFreedom)})");
                                                 Console.Write("Введите номер, соответствующий подходящей поверхности: ");
                                                 string? choiceSurface2 = Console.ReadLine(); // Ввод пользователем значения
 
@@ -783,7 +833,8 @@ namespace Surface_Storage
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                                    Console.WriteLine(surfacesWithoutParallel.Count()==1? "Необходимо ввести 1":
+                                                        $"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
                                                     Console.ReadKey();
                                                     Console.Clear();
                                                     output.OutputText(output.temporaryNotification);
@@ -805,7 +856,10 @@ namespace Surface_Storage
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {temporaryStorage.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                    string notification = temporaryStorage.Count() == 1 ? "Необходимо ввести 1" :
+                                        $"Необходимо ввести целое число от 1 до {temporaryStorage.Count()} включительно.\nНажмите на любую клавишу для продолжения";
+
+                                    Console.WriteLine(notification);
                                     Console.ReadKey();
                                     Console.Clear();
                                     output.OutputText(output.temporaryNotification);
@@ -877,14 +931,13 @@ namespace Surface_Storage
                             }
                         }
 
-
                         else // Ситуация наличия 1 и более ранее занесенных поверхностей кроме сферы
                         {
                             while (true)
                             {
                                 Console.WriteLine("Выберите поверхность, относительно которой желаете задать параллельность или перпендикулярность.");
                                 for (int i = 0; i < temporaryStorage.Count(); i++) // Представление всех введенных ранее поверхностей кроме сфер
-                                    Console.WriteLine($"{i + 1} - {temporaryStorage[i].Name} ({string.Join(',',temporaryStorage[i].DegreesOfFreedom)})");
+                                    Console.WriteLine($"{i + 1} - {temporaryStorage[i].Name} ({string.Join(',', temporaryStorage[i].DegreesOfFreedom)})");
                                 Console.Write("Введите номер, соответствующий подходящей поверхности: ");
                                 string? choiceSurface = Console.ReadLine(); // Ввод пользователем значения
 
@@ -1054,7 +1107,12 @@ namespace Surface_Storage
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                                    string notification = surfacesWithoutParallel.Count() == 1 ? "Необходимо ввести 1" :
+                                        $"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения";
+
+                                                    Console.WriteLine(notification);
+
+                                                    //Console.WriteLine($"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
                                                     Console.ReadKey();
                                                     Console.Clear();
                                                     output.OutputText(output.temporaryNotification);
@@ -1076,7 +1134,10 @@ namespace Surface_Storage
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"Необходимо ввести целое число от 1 до {temporaryStorage.Count()} включительно.\nНажмите на любую клавишу для продолжения");
+                                    string notification = temporaryStorage.Count() == 1 ? "Необходимо ввести 1" :
+                                        $"Необходимо ввести целое число от 1 до {temporaryStorage.Count()} включительно.\nНажмите на любую клавишу для продолжения";
+
+                                    Console.WriteLine(notification);
                                     Console.ReadKey();
                                     Console.Clear();
                                     output.OutputText(output.temporaryNotification);
@@ -1093,6 +1154,7 @@ namespace Surface_Storage
                     }
                 }
             }
+
 
 
         }
