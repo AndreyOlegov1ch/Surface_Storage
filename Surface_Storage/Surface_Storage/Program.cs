@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Metrics;
 using System.Linq;
 
 namespace Surface_Storage
@@ -266,14 +267,14 @@ namespace Surface_Storage
                 }
                 if (list.Count() == 2) // Выполнение блока при удовлетворении требований к входным данным
                 {
-                    if (double.TryParse(list[1], out double v) && v > 0 && (int.TryParse(list[0], out int name)) && name>0)
+                    if (double.TryParse(list[1], out double v) && v > 0 && (int.TryParse(list[0], out int name)) && name > 0)
                     {
                         int number_name = name;
                         double deviation_value = v;
 
                         if (form == "Плоскость") // Задание отклонений формы для плоскости
                         {
-                            if (number_name==1)
+                            if (number_name == 1)
                             {
                                 surface.Flatness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Плоскостности:")).ToList().Count() == 1)
@@ -286,7 +287,7 @@ namespace Surface_Storage
                                     output.temporaryNotification.Add($"Отклонение от Плоскостности: {surface.Flatness} мм");
                                 }
                             }
-                            else if (number_name==2)
+                            else if (number_name == 2)
                             {
                                 surface.Straightness = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Прямолинейности:")).ToList().Count() == 1)
@@ -312,7 +313,7 @@ namespace Surface_Storage
 
                         else if (form == "Цилиндр") // Задание отклонений формы для цилиндра
                         {
-                            if (number_name==1)
+                            if (number_name == 1)
                             {
                                 surface.Cylindrical = deviation_value;
                                 if (output.temporaryNotification.Where(x => x.StartsWith("Отклонение от Цилиндричности:")).ToList().Count() == 1)
@@ -833,7 +834,7 @@ namespace Surface_Storage
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine(surfacesWithoutParallel.Count()==1? "Необходимо ввести 1":
+                                                    Console.WriteLine(surfacesWithoutParallel.Count() == 1 ? "Необходимо ввести 1" :
                                                         $"Необходимо ввести целое число от 1 до {surfacesWithoutParallel.Count()} включительно.\nНажмите на любую клавишу для продолжения");
                                                     Console.ReadKey();
                                                     Console.Clear();
@@ -1155,8 +1156,157 @@ namespace Surface_Storage
                 }
             }
 
+            while (true) // Задание рельефа следа инструмента
+            {
+                List<int> copyOrientation = new List<int>(surface.DegreesOfFreedom); // Создание копии шестимерного вектора ориентации поверхности в пространстве
+                List<string> directions = new List<string>() { "lx", "ly", "lz", "ax", "ay", "az" }; //Направления для выбора направляющей и образующей
+
+                GuideOfSurface(surface, copyOrientation, directions, output, form);
+
+                output.temporaryNotification.Add($"Направление образующей линии: {surface.Formative}");
+                output.temporaryNotification.Add($"Направление направляющей линии: {surface.Guide}");
+                output.temporaryNotification.Add($"Рельеф следа инструмента: {surface.SurfaceRelief}");
+                Console.Clear();
+                output.OutputText(output.temporaryNotification);
+                break;
+            }
 
 
+        }
+
+        public static void GuideOfSurface(Surfaces surface, List<int> copyOrientation, List<string> directions, Output output, string form) // Задание направляющей
+        {
+            while (true)
+            {
+                Console.WriteLine("Выберите направления для задания образующей линии, определяющей формирование и рельеф поверхности");
+                if (form == "Сфера")
+                    Console.WriteLine("Если направления образующей и направляющей не имеют значения - введите Enter");
+                int counter = 1;
+                string? one = "";
+                string? two = "";
+                string? three = "";
+
+                for (int j = 0; j < 6; j++)
+                {
+                    if (copyOrientation[j] == 0)
+                    {
+                        Console.WriteLine($"{counter++} - {directions[j]}");
+                        if (string.IsNullOrEmpty(one))
+                        {
+                            one = directions[j];
+                        }
+                        else if (string.IsNullOrEmpty(two))
+                        {
+                            two = directions[j];
+                        }
+                        else
+                            three = directions[j];
+                    }
+                }
+                Console.Write("Введите удовлетворяющий вас вариант: ");
+                string? input = Console.ReadLine();
+
+                if (form == "Сфера" && string.IsNullOrEmpty(input))
+                {
+                    surface.Formative = directions[3];
+                    surface.Guide = directions[4];
+                    surface.SurfaceRelief = "Кругообразный";
+                }
+                else if (form == "Цилиндр" && int.TryParse(input, out int n) && (n == 1 || n == 2))
+                {
+                    if (n == 1)
+                    {
+                        surface.Formative = one;
+                        surface.Guide = two;
+                    }
+                    else
+                    {
+                        surface.Formative = two;
+                        surface.Guide = one;
+                    }
+
+                    int indexOfFormative = directions.IndexOf(surface.Formative);
+
+                    if (indexOfFormative > 2)
+                        surface.SurfaceRelief = "Кругообразный";
+                    else
+                        surface.SurfaceRelief = "Прямолинейный";
+                }
+                else if (int.TryParse(input, out int num) && (num == 1 || num == 2 || num == 3))
+                {
+                    switch (num)
+                    {
+                        case 1:
+                            {
+                                surface.Formative = one;
+                                break;
+                            }
+                        case 2:
+                            {
+                                surface.Formative = two;
+                                break;
+                            }
+                        case 3:
+                            {
+                                surface.Formative = three;
+                                break;
+                            }
+                    }
+                    int indexOfFormative = directions.IndexOf(surface.Formative);
+                    copyOrientation[indexOfFormative] = 1;
+                    if (indexOfFormative > 2)
+                        surface.SurfaceRelief = "Кругообразный";
+                    else
+                        surface.SurfaceRelief = "Прямолинейный";
+
+                    while (true)
+                    {
+                        Console.WriteLine("Выберите направление для задания направляющей линии");
+                        int counter2 = 1;
+                        string? one2 = "";
+                        string? two2 = "";
+                        for (int i = 0; i < 6; i++)
+                        {
+                            if (copyOrientation[i] == 0)
+                            {
+                                Console.WriteLine($"{counter2++} - {directions[i]}");
+                                if (string.IsNullOrEmpty(one2))
+                                {
+                                    one2 = directions[i];
+                                }
+                                else
+                                    two2 = directions[i];
+                            }
+                        }
+                        Console.Write("Введите удовлетворяющий вас вариант: ");
+                        string? input2 = Console.ReadLine();
+                        if (int.TryParse(input2, out int num2) && (num2 == 1 || num2 == 2))
+                        {
+                            surface.Guide = num2 == 1 ? one2 : two2;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Необходимо ввести целое число 1 или 2.\nНажмите на любую клавишу для продолжения");
+                            Console.ReadKey();
+                            Console.Clear();
+                            output.OutputText(output.temporaryNotification);
+                            continue;
+                        }
+                        break;
+                    }
+                }
+                else
+                {
+                    string text = form == "Цилиндр" ? "Необходимо ввести целое число 1 или 2." : "Необходимо ввести целое число 1, 2 или 3.";
+                    Console.WriteLine(text);
+                    Console.WriteLine("Нажмите на любую клавишу для продолжения");
+                    Console.ReadKey();
+                    Console.Clear();
+                    output.OutputText(output.temporaryNotification);
+                    continue;
+                }
+                break;
+            }
         }
     }
     public abstract class Surfaces // Класс для описания поверхностей
@@ -1166,6 +1316,10 @@ namespace Surface_Storage
         public double Roughness = 6.3; // Шероховатость (есть значение по-умолчанию)
         public double Diameter; // Диаметр (свойственен для цилиндра и сферы)
         public string? Location; // Состояние расположения (внутреннее/наружное, для сефры или цилиндра)
+        public string? SurfaceRelief; // Тип образуемого рельефа
+        public string? Formative; // Образующая (направляение)
+        public string? Guide; // Направляющая (направление)
+
 
         public double Flatness; // Отклонение от Плоскостности
         public double Cylindrical; // Отклонение от Цилиндричности
